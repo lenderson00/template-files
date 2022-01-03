@@ -2,7 +2,6 @@
 
 yarn init -y
 
-
 echo "root = true
 [*]
 indent_style = space
@@ -72,10 +71,9 @@ echo "module.exports = {
   transform: {
     '\\.ts$': 'ts-jest'
   },
-  clearMocks: true,
-  setupFiles: ['dotenv/config']
+  clearMocks: true
 }
-" > jest.config.js 
+" > jest.config.js
 
 
 echo '{
@@ -109,13 +107,24 @@ echo '{
   "exclude": ["tests"]
 }' > tsconfig-build.json
 
+cat <<< $(jq '.scripts += {"clean":"rimraf dist"} + .scripts' package.json ) > package.json
+cat <<< $(jq '.scripts += {"build": "npm run clean && tsc -p tsconfig-build.json"} + .scripts' package.json ) > package.json
 
+cat <<< $(jq '.scripts += {"test":"jest --passWithNoTests --no-cache"} + .scripts' package.json ) > package.json
+cat <<< $(jq '.scripts += {"test:watch":"jest -- --coverage"} + .scripts' package.json ) > package.json
+cat <<< $(jq '.scripts += {"test:staged": "npm t -- --findRelatedTests"} + .scripts' package.json ) > package.json
+cat <<< $(jq '.scripts += {"test:coverage":"npm t -- --coverage"} + .scripts' package.json ) > package.json
+
+cat <<< $(jq '.scripts += {"lint": "eslint"} + .scripts' package.json ) > package.json
+cat <<< $(jq '.scripts += {"lint:fix":"npm run lint -- --fix"} + .scripts' package.json ) > package.json
 
 yarn add -D typescript @types/node
 
 yarn add -D git-commit-msg-linter
 
 yarn add -D jest ts-jest @types/jest
+
+yarn add rimraf
 
 
 yarn add -D \
@@ -128,28 +137,41 @@ yarn add -D \
 
 yarn add -D lint-staged
 
-yarn add -D husky 
+yarn add -D husky
 
+npx husky install
 npx husky add .husky/pre-commit "npm pre-commit"
 
 yarn add module-alias
+yarn add -D @types/module-alias
+
+mkdir tests
 
 echo "describe('test', () => {
   it('it test', () => {
     expect(1).toBe(1)
   })
-})" > test/index.spec.ts
+})" > tests/index.spec.ts
+
+
+mkdir src
+mkdir src/main
+mkdir src/main/config
 
 echo "import { addAlias } from 'module-alias'
 import { resolve } from 'path'
 
 addAlias('@', resolve('dist'))
-" > src/main/config/moduleAlias.ts 
+" > src/main/config/moduleAlias.ts
 
 echo "export * from './moduleAlias'
-" > src/main/config/index.ts 
+" > src/main/config/index.ts
 
-git add . 
+git add .
 git commit -m "chore: add initial files by script"
+
+cat <<< $(jq '.engines += {"node:": "16.x"} + .engines' package.json ) > package.json
+
+yarn test
 
 echo "Everything done!"
