@@ -140,7 +140,9 @@ yarn add -D lint-staged
 yarn add -D husky
 
 npx husky install
-npx husky add .husky/pre-commit "npm pre-commit"
+npx husky add .husky/pre-commit "npx lint-staged"
+npx husky add .husky/pre-commit "npm run test:coverage"
+
 
 yarn add module-alias
 yarn add -D @types/module-alias
