@@ -2,6 +2,8 @@
 
 yarn init -y
 
+git init
+
 echo "root = true
 [*]
 indent_style = space
