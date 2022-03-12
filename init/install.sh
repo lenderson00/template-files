@@ -113,7 +113,7 @@ cat <<< $(jq '.scripts += {"clean":"rimraf dist"} + .scripts' package.json ) > p
 cat <<< $(jq '.scripts += {"build": "npm run clean && tsc -p tsconfig-build.json"} + .scripts' package.json ) > package.json
 
 cat <<< $(jq '.scripts += {"test":"jest --passWithNoTests --no-cache"} + .scripts' package.json ) > package.json
-cat <<< $(jq '.scripts += {"test:watch":"jest -- --coverage"} + .scripts' package.json ) > package.json
+cat <<< $(jq '.scripts += {"test:watch":"npm t -- --watch"} + .scripts' package.json ) > package.json
 cat <<< $(jq '.scripts += {"test:staged": "npm t -- --findRelatedTests"} + .scripts' package.json ) > package.json
 cat <<< $(jq '.scripts += {"test:coverage":"npm t -- --coverage"} + .scripts' package.json ) > package.json
 
